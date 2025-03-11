@@ -9,8 +9,7 @@ def fetch_ips():
         return data
     except Exception as e:
         return {
-            "ipv4": ["162.159.192.23:859", "162.159.192.178:4500"],
-            "ipv6": ["[2606:4700:d1::9f62:b405:88e4:858e]:7152"]
+            "ipv4": ["162.159.192.23:859", "162.159.192.178:4500"]
         }
 
 def update_config_file(config_file):
@@ -19,13 +18,14 @@ def update_config_file(config_file):
             data = json.load(f)
 
         ips = fetch_ips()
-        ipv4_list = random.sample(ips['ipv4'], 2)
-        ipv6 = random.choice(ips['ipv6'])
+        ipv4_list = [ip for ip in ips['ipv4'] if ip.startswith("162.")] # تغییر در این خط
 
-        # انتخاب تصادفی از IPهای IPv4 و IPv6
+        if not ipv4_list:
+            print("هیچ IP با شروع 162 پیدا نشد.")
+            return
+
         new_endpoint = random.choice(ipv4_list)
 
-        # تغییر endpoint در فایل JSON
         data['outbounds'][0]['settings']['peers'][0]['endpoint'] = new_endpoint
 
         with open(config_file, 'w') as f:
